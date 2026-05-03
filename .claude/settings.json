@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push *)",
+            "command": "bash .git/hooks/pre-push",
+            "timeout": 180,
+            "statusMessage": "Quality gate: running tests, lint, security, CI checks..."
+          },
+          {
+            "type": "agent",
+            "if": "Bash(git push *)",
+            "prompt": "You are a senior code reviewer. Before this git push proceeds, proactively audit all changed files.\n\nRun these commands to understand what is changing:\n  git diff HEAD --stat\n  git diff HEAD\n\nCheck for ALL of the following:\n\n1. BUGS & LOGIC ERRORS\n   - Off-by-one errors, null/undefined dereferences\n   - Unreachable code, incorrect conditionals\n   - Missing awaits on async calls, unhandled promise rejections\n   - Race conditions or shared mutable state issues\n\n2. PERFORMANCE ISSUES\n   - N+1 query patterns (loops containing DB/API calls)\n   - Synchronous blocking operations in async paths\n   - Missing indexes implied by new query patterns\n   - Unbounded loops or O(n²) patterns in hot paths\n   - Memory leaks (event listeners not cleaned up, circular refs)\n\n3. GITHUB ACTIONS / CI ISSUES\n   - Check .github/workflows/*.yml if changed\n   - Missing required secrets or env vars\n   - Incorrect trigger events or branch filters\n   - Steps that could fail silently (missing continue-on-error or failure checks)\n\n4. SECURITY\n   - Hardcoded credentials or tokens in code\n   - Input passed unsanitised to shell commands, SQL, or eval\n   - Dependencies pinned to unsafe ranges\n\nOutput format:\n- If you find CRITICAL issues (bugs that will cause failures or security vulnerabilities): respond with JSON only: {\"continue\": false, \"stopReason\": \"PUSH BLOCKED — Critical issues:\\n<bulleted list of issues with file:line references>\"}\n- If you find only WARNINGS (style, performance hints, non-breaking issues): respond with JSON only: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"Pre-push review warnings:\\n<bulleted list>\"}}\n- If everything looks clean: respond with JSON only: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"Pre-push review: no issues found\"}}",
+            "timeout": 90,
+            "statusMessage": "AI reviewing changes for bugs, performance & CI issues..."
+          }
+        ]
+      }
+    ]
+  }
+}
