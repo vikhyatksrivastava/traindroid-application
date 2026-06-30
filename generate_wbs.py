@@ -5,6 +5,8 @@ Includes: UX Design, Architecture Design, Observability, Documentation,
 and all 4 core differentiator features explicitly tagged.
 """
 
+from pathlib import Path
+
 from openpyxl import Workbook
 from openpyxl.styles import (
     PatternFill, Font, Alignment, Border, Side
@@ -786,7 +788,7 @@ def main():
     build_summary_sheet(wb, all_fe, all_be, all_qa, all_dv, all_db, all_tot)
     build_milestone_sheet(wb)
 
-    out = r"c:\projects\my_projects\traindroid-application\traindroid_WBS_v2.xlsx"
+    out = Path(__file__).parent / "traindroid_WBS_v2.xlsx"
     wb.save(out)
 
     print(f"\nSaved: {out}")
@@ -815,10 +817,6 @@ def main():
     print(f"  ★   M2+ hours                 : {sum(r[5]+r[6]+r[7]+r[8]+r[9] for r in WBS if r[4]==T_M2):>4} hrs")
     print(f"  —   Design hours              : {sum(r[5]+r[6]+r[7]+r[8]+r[9] for r in WBS if r[4]==T_DSGN):>4} hrs")
     print(f"{'─'*60}\n")
-
-
-if __name__ == "__main__":
-    main()
 
 
 if __name__ == "__main__":
